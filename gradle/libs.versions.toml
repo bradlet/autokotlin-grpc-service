@@ -1,27 +1,35 @@
 [versions]
 kotlin = "2.0.20"
+kotlinx = "1.9.0"
 guava = "33.2.1-jre"
 junit-jupiter = "5.10.3"
 protobuf-plugin = "0.9.4"
 grpc = "1.66.0"
 grpc-kotlin = "1.4.1"
+proto = "4.28.0"
+logback = "1.5.6"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback"}
+kotlin-logging = { module = "io.github.microutils:kotlin-logging-jvm", version = "2.0.11" }
+kotlin-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx" }
 jib = { module = "com.google.cloud:tools.jib", version = "3.4.3" }
-# Protobuf
-protoc = { group = "com.google.protobuf", name = "protoc", version = "3.25.3" }
-protoc-gen-grpc-java = { group = "io.grpc", name = "protoc-gen-grpc-java", version = "1.62.2" }
+
+# grpc / protobuf
+protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "proto" }
+protoc-gen-grpc-java = { group = "io.grpc", name = "protoc-gen-grpc-java", version.ref = "grpc" }
 protoc-gen-grpc-kotlin = { group = "io.grpc", name = "protoc-gen-grpc-kotlin", version = "1.4.1" }
 grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version.ref = "grpc-kotlin" }
 grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
-protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version = "4.27.2" }
+grpc-services = { module = "io.grpc:grpc-services", version.ref = "grpc" }
+grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
+grpc-netty = { group = "io.grpc", name = "grpc-netty-shaded", version.ref = "grpc" }
+protobuf = { module = "com.google.protobuf:protobuf-java", version.ref = "proto" }
+protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "proto" }
 
-# krpc-server = { group = "org.jetbrains.kotlinx", name = "kotlinx-rpc-krpc-server"}
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
-
-# kotlinx-rpc = { id = "org.jetbrainsins.kotlinx.rpc.plugin", version = "0.2.4" }

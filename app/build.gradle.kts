@@ -2,6 +2,11 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.protobuf)
 //    alias(libs.plugins.jib)
+    application
+}
+
+application {
+    mainClass = "com.autokotlin.grpc.ServerKt"
 }
 
 repositories {
@@ -11,10 +16,17 @@ repositories {
 
 dependencies {
     implementation(libs.guava) // Maybe remove but I kinda like just having it around
+    implementation(libs.logback)
+    implementation(libs.kotlin.logging)
+    implementation(libs.kotlin.coroutines)
 
     // GRPC & Protobuf
+    implementation(libs.grpc.stub)
     implementation(libs.grpc.kotlin.stub)
+    implementation(libs.grpc.netty)
     implementation(libs.grpc.protobuf)
+    implementation(libs.grpc.services)
+    implementation(libs.protobuf)
     implementation(libs.protobuf.kotlin)
 
     // Use JUnit Jupiter for testing.
@@ -27,7 +39,6 @@ dependencies {
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(22))
-        // TODO: If jdk 8 is actually needed because of grpc-kotlin, change here
     }
 }
 
