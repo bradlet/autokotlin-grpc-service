@@ -18,8 +18,8 @@ class GrpcServer(
         private val bindableServices = mutableListOf<BindableService>()
 
         var port: Int = 6565
-        var enableHealthChecks: Boolean = true
-        var enableReflection: Boolean = true
+        var enableHealthChecks: Boolean = false
+        var enableReflection: Boolean = false
 
         fun addService(service: BindableService) {
             bindableServices.add(service)
@@ -37,7 +37,7 @@ class GrpcServer(
                 }
                 if (enableHealthChecks) {
                     healthStatusManager = HealthStatusManager()
-                    addServices(healthStatusManager.healthService)
+                    addService(healthStatusManager.healthService)
                 }
             }
             .build()
@@ -86,7 +86,12 @@ fun main(args: Array<String>) {
     logger.info { args.joinToString { " | " } }
 
     GrpcServer {
-        addService(HelloWorldService(EmptyCoroutineContext))
+        port = 6565
+        enableReflection = true
+        enableHealthChecks = true
+        addServices(
+            HelloWorldService(),
+        )
     }.let { server ->
         server.start()
         server.blockUntilShutdown()
