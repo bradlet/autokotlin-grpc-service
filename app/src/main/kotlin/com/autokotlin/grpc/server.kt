@@ -5,7 +5,6 @@ import io.grpc.ServerBuilder
 import io.grpc.health.v1.HealthCheckResponse
 import io.grpc.protobuf.services.ProtoReflectionService
 import io.grpc.protobuf.services.HealthStatusManager
-import kotlin.coroutines.EmptyCoroutineContext
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger(GrpcServer::class.java.simpleName)
@@ -14,7 +13,7 @@ class GrpcServer(
     configurator: GrpcServerConfiguration.() -> Unit
 ) {
     class GrpcServerConfiguration {
-        internal lateinit var healthStatusManager: HealthStatusManager
+        private lateinit var healthStatusManager: HealthStatusManager
         private val bindableServices = mutableListOf<BindableService>()
 
         var port: Int = 6565
@@ -39,6 +38,7 @@ class GrpcServer(
                     healthStatusManager = HealthStatusManager()
                     addService(healthStatusManager.healthService)
                 }
+                bindableServices.forEach { addService(it) }
             }
             .build()
 
@@ -63,12 +63,14 @@ class GrpcServer(
 
     fun start() {
         server.start()
-        println("Server started, listening on ${configuration.port}")
+        logger.info("Server started, listening on ${configuration.port}")
+        configuration.signalServerUp()
         Runtime.getRuntime().addShutdownHook(
             Thread {
-                println("*** shutting down gRPC server since JVM is shutting down")
+                logger.info("*** shutting down gRPC server since JVM is shutting down")
                 stop()
-                println("*** server shut down")
+                configuration.signalServerDown()
+                logger.info("*** server shut down")
             },
         )
     }
