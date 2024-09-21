@@ -29,11 +29,16 @@ dependencies {
     implementation(libs.protobuf)
     implementation(libs.protobuf.kotlin)
 
-    // Use JUnit Jupiter for testing.
+    // Test dependencies
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.kotest.core)
+    testImplementation(libs.kotest.property)
+    testImplementation(libs.kotest.runner)
+    testImplementation(libs.grpc.testing)
+    testImplementation(libs.grpc.inprocess)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
 }
 
 java {
@@ -65,6 +70,12 @@ tasks.named<Test>("test") {
 
 sourceSets {
     main {
+//        java {
+//            srcDir("src/main/kotlin")
+//        }
+        kotlin {
+            srcDir("src/main/kotlin")
+        }
         proto {
             setSrcDirs(
                 mutableListOf(
@@ -74,6 +85,12 @@ sourceSets {
         }
     }
     test {
+//        java {
+//            srcDir("src/test/kotlin")
+//        }
+        kotlin {
+            srcDir("src/test/kotlin")
+        }
         proto {
             setSrcDirs(
                 mutableListOf(

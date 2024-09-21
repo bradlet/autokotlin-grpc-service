@@ -1,6 +1,7 @@
 [versions]
 kotlin = "2.0.20"
 kotlinx = "1.9.0"
+kotest = "5.9.1"
 guava = "33.2.1-jre"
 junit-jupiter = "5.10.3"
 protobuf-plugin = "0.9.4"
@@ -15,19 +16,25 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jun
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback"}
 kotlin-logging = { module = "io.github.microutils:kotlin-logging-jvm", version = "2.0.11" }
 kotlin-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx" }
+kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx" }
+kotest-core = { group = "io.kotest", name = "kotest-assertions-core-jvm", version.ref = "kotest" }
+kotest-property = { group = "io.kotest", name = "kotest-property", version.ref = "kotest" }
+kotest-runner = { group = "io.kotest", name = "kotest-runner-junit5", version.ref = "kotest" }
 jib = { module = "com.google.cloud:tools.jib", version = "3.4.3" }
 
 # grpc / protobuf
-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "proto" }
-protoc-gen-grpc-java = { group = "io.grpc", name = "protoc-gen-grpc-java", version.ref = "grpc" }
-protoc-gen-grpc-kotlin = { group = "io.grpc", name = "protoc-gen-grpc-kotlin", version = "1.4.1" }
 grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version.ref = "grpc-kotlin" }
 grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
 grpc-services = { module = "io.grpc:grpc-services", version.ref = "grpc" }
 grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
 grpc-netty = { group = "io.grpc", name = "grpc-netty-shaded", version.ref = "grpc" }
+grpc-testing = { group = "io.grpc", name = "grpc-testing", version.ref = "grpc" }
+grpc-inprocess = { group = "io.grpc", name = "grpc-inprocess", version.ref = "grpc" }
 protobuf = { module = "com.google.protobuf:protobuf-java", version.ref = "proto" }
 protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "proto" }
+protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "proto" }
+protoc-gen-grpc-java = { group = "io.grpc", name = "protoc-gen-grpc-java", version.ref = "grpc" }
+protoc-gen-grpc-kotlin = { group = "io.grpc", name = "protoc-gen-grpc-kotlin", version = "1.4.1" }
 
 
 [plugins]

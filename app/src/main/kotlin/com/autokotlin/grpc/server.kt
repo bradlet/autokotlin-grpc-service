@@ -9,10 +9,17 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger(GrpcServer::class.java.simpleName)
 
+/**
+ * A simple gRpc server wrapper implementation that exposes a limited API that simplifies server setup and testing.
+ * @param serverBuilder The gRpc server builder to use. Exposed primarily to allow for in-process transport mechanisms
+ *  which power integration-style testing.
+ * @param configurator A lambda that configures the server instance.
+ */
 class GrpcServer(
+    private val serverBuilder: ServerBuilder<*>? = null,
     configurator: GrpcServerConfiguration.() -> Unit
 ) {
-    class GrpcServerConfiguration {
+    inner class GrpcServerConfiguration {
         private lateinit var healthStatusManager: HealthStatusManager
         private val bindableServices = mutableListOf<BindableService>()
 
@@ -28,8 +35,9 @@ class GrpcServer(
             bindableServices.addAll(services)
         }
 
-        internal fun build() = ServerBuilder
-            .forPort(port)
+        internal fun build() = (
+                serverBuilder ?: ServerBuilder.forPort(port)
+                )
             .apply {
                 if (enableReflection) {
                     addService(ProtoReflectionService.newInstance())
@@ -69,14 +77,14 @@ class GrpcServer(
             Thread {
                 logger.info("*** shutting down gRPC server since JVM is shutting down")
                 stop()
-                configuration.signalServerDown()
                 logger.info("*** server shut down")
             },
         )
     }
 
-    private fun stop() {
+    fun stop() {
         server.shutdown()
+        configuration.signalServerDown()
     }
 
     fun blockUntilShutdown() {
