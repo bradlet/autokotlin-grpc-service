@@ -1,12 +1,11 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.protobuf)
 //    alias(libs.plugins.jib)
     application
 }
 
 application {
-    mainClass = "com.autokotlin.grpc.ServerKt"
+    mainClass = "com.autokotlin.ktor.ServerKt"
 }
 
 repositories {
@@ -15,31 +14,17 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":lib"))
-
     implementation(libs.guava) // Maybe remove but I kinda like just having it around
     implementation(libs.logback)
     implementation(libs.kotlin.logging)
     implementation(libs.kotlin.coroutines)
 
-    // GRPC & Protobuf
-    implementation(libs.grpc.stub)
-    implementation(libs.grpc.kotlin.stub)
-    implementation(libs.grpc.netty)
-    implementation(libs.grpc.protobuf)
-    implementation(libs.grpc.services)
-    implementation(libs.protobuf)
-    implementation(libs.protobuf.kotlin)
-
     // Test dependencies
-    testImplementation(testFixtures(project(":lib")))
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotlin.coroutines.test)
     testImplementation(libs.kotest.core)
     testImplementation(libs.kotest.property)
     testImplementation(libs.kotest.runner)
-    testImplementation(libs.grpc.testing)
-    testImplementation(libs.grpc.inprocess)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
@@ -73,58 +58,13 @@ tasks.named<Test>("test") {
 
 sourceSets {
     main {
-//        java {
-//            srcDir("src/main/kotlin")
-//        }
         kotlin {
             srcDir("src/main/kotlin")
         }
-        proto {
-            setSrcDirs(
-                mutableListOf(
-                    "../protos",
-                )
-            )
-        }
     }
     test {
-//        java {
-//            srcDir("src/test/kotlin")
-//        }
         kotlin {
             srcDir("src/test/kotlin")
-        }
-        proto {
-            setSrcDirs(
-                mutableListOf(
-                    "../protos",
-                )
-            )
-        }
-    }
-}
-
-protobuf {
-    protoc {
-        artifact = libs.protoc.asProvider().get().toString()
-    }
-    plugins {
-        create("grpc") {
-            artifact = libs.protoc.gen.grpc.java.get().toString()
-        }
-        create("grpckt") {
-            artifact = "${libs.protoc.gen.grpc.kotlin.get().toString()}:jdk8@jar"
-        }
-    }
-    generateProtoTasks {
-        all().forEach {
-            it.plugins {
-                create("grpc")
-                create("grpckt")
-            }
-            it.builtins {
-                create("kotlin")
-            }
         }
     }
 }

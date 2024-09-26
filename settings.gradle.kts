@@ -4,4 +4,4 @@ plugins {
 }
 
 rootProject.name = "autokotlin-grpc-service"
-include("app")
+include("app", "ktor-app", "lib")

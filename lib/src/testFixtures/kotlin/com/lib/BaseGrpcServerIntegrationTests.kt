@@ -1,6 +1,5 @@
-package com.autokotlin.grpc.integration
+package com.lib
 
-import com.autokotlin.grpc.GrpcServer
 import io.grpc.BindableService
 import io.grpc.ManagedChannel
 import io.grpc.inprocess.InProcessChannelBuilder

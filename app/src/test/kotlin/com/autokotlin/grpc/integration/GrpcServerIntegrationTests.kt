@@ -1,6 +1,7 @@
 package com.autokotlin.grpc.integration
 
 import com.autokotlin.grpc.HelloWorldService
+import com.lib.BaseGrpcServerIntegrationTests
 import helloworld.HelloWorldGrpcKt
 import helloworld.helloRequest
 import io.kotest.matchers.shouldBe
