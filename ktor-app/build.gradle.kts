@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.ktor)
 //    alias(libs.plugins.jib)
     application
 }
@@ -11,6 +12,7 @@ application {
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
+    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
 }
 
 dependencies {
@@ -18,6 +20,14 @@ dependencies {
     implementation(libs.logback)
     implementation(libs.kotlin.logging)
     implementation(libs.kotlin.coroutines)
+
+    // Ktor dependencies
+    implementation(libs.ktor.server)
+    implementation(libs.ktor.netty)
+    implementation(libs.ktor.content.negotation)
+    implementation(libs.ktor.gson)
+    // implementation(libs.ktor.status.pages
+    testImplementation(libs.ktor.server.tests)
 
     // Test dependencies
     testImplementation(libs.junit.jupiter)

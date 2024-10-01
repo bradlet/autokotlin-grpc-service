@@ -9,6 +9,7 @@ grpc = "1.66.0"
 grpc-kotlin = "1.4.1"
 proto = "4.28.0"
 logback = "1.5.6"
+ktor = "2.3.12"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
@@ -36,7 +37,15 @@ protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "proto"
 protoc-gen-grpc-java = { group = "io.grpc", name = "protoc-gen-grpc-java", version.ref = "grpc" }
 protoc-gen-grpc-kotlin = { group = "io.grpc", name = "protoc-gen-grpc-kotlin", version = "1.4.1" }
 
+# ktor
+ktor-status-pages = { group = "io.ktor", name = "ktor-server-status-pages", version.ref = "ktor" }
+ktor-server = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
+ktor-netty = { group = "io.ktor", name = "ktor-server-netty-jvm", version.ref = "ktor" }
+ktor-server-tests = { group = "io.ktor", name = "ktor-server-tests-jvm", version.ref = "ktor" }
+ktor-content-negotation = { group = "io.ktor", name = "ktor-server-content-negotiation-jvm", version.ref = "ktor" }
+ktor-gson = { group = "io.ktor", name = "ktor-serialization-gson", version.ref = "ktor" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
