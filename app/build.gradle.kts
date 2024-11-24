@@ -75,9 +75,6 @@ tasks.named<Test>("test") {
 
 sourceSets {
     main {
-//        java {
-//            srcDir("src/main/kotlin")
-//        }
         kotlin {
             srcDir("src/main/kotlin")
         }
@@ -90,9 +87,6 @@ sourceSets {
         }
     }
     test {
-//        java {
-//            srcDir("src/test/kotlin")
-//        }
         kotlin {
             srcDir("src/test/kotlin")
         }
