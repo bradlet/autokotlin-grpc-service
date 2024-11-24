@@ -21,7 +21,6 @@ kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coro
 kotest-core = { group = "io.kotest", name = "kotest-assertions-core-jvm", version.ref = "kotest" }
 kotest-property = { group = "io.kotest", name = "kotest-property", version.ref = "kotest" }
 kotest-runner = { group = "io.kotest", name = "kotest-runner-junit5", version.ref = "kotest" }
-jib = { module = "com.google.cloud:tools.jib", version = "3.4.3" }
 
 # grpc / protobuf
 grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version.ref = "grpc-kotlin" }
@@ -49,3 +48,4 @@ ktor-gson = { group = "io.ktor", name = "ktor-serialization-gson", version.ref =
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+jib = { id = "com.google.cloud.tools.jib", version = "3.4.4" }

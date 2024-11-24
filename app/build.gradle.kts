@@ -1,12 +1,14 @@
 plugins {
     kotlin("jvm")
     alias(libs.plugins.protobuf)
-//    alias(libs.plugins.jib)
+    alias(libs.plugins.jib)
     application
 }
 
+val main = "com.autokotlin.grpc.ServerKt"
+
 application {
-    mainClass = "com.autokotlin.grpc.ServerKt"
+    mainClass = main
 }
 
 repositories {
@@ -126,5 +128,18 @@ protobuf {
                 create("kotlin")
             }
         }
+    }
+}
+
+jib {
+    from {
+        image = "eclipse-temurin:22"
+    }
+    to {
+        image = "bradlet2/autokotlin-grpc-service"
+    }
+    container {
+        mainClass = main
+        ports = listOf("6565")
     }
 }
