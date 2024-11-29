@@ -82,7 +82,7 @@ sourceSets {
         proto {
             setSrcDirs(
                 mutableListOf(
-                    "../protos",
+                    "${rootProject.projectDir}/protos",
                 )
             )
         }
@@ -94,7 +94,7 @@ sourceSets {
         proto {
             setSrcDirs(
                 mutableListOf(
-                    "../protos",
+                    "${rootProject.projectDir}/protos",
                 )
             )
         }
