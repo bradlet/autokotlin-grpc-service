@@ -6,6 +6,7 @@ plugins {
 }
 
 val main = "com.autokotlin.grpc.ServerKt"
+val imageRepo: String? by extra // Specify different repo from the default with -PimageRepo=...
 
 application {
     mainClass = main
@@ -130,7 +131,7 @@ jib {
         image = "eclipse-temurin:22"
     }
     to {
-        image = "bradlet2/autokotlin-grpc-service"
+        image = imageRepo ?: "bradlet2/autokotlin-grpc-service"
     }
     container {
         mainClass = main
