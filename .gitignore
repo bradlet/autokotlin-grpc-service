@@ -6,3 +6,7 @@ build
 
 # IDEs
 .idea
+
+# IaC
+*.tfstate
+infra/.terraform/providers/

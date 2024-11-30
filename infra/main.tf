@@ -34,12 +34,12 @@ resource "google_iam_workload_identity_pool_provider" "github_actions" {
   oidc {
     issuer_uri = "https://token.actions.GitHubusercontent.com/"
   }
-  attribute_mapping = <<EOT
-  google.subject=assertion.sub,
-  attribute.repository=assertion.repository,
-  attribute.repository_owner=assertion.repository_owner,
-  attribute.branch=assertion.sub.extract('/heads/{branch}/')
-EOT
+  attribute_mapping = {
+    "google.subject" = "assertion.sub",
+    "attribute.repository" = "assertion.repository",
+    "attribute.repository_owner" = "assertion.repository_owner",
+    "attribute.branch" = "assertion.sub.extract('/heads/{branch}/')"
+  }
   attribute_condition = "assertion.repository_owner=='bradlet'"
 }
 
