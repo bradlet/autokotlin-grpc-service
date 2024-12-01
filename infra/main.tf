@@ -55,6 +55,18 @@ resource "google_service_account_iam_binding" "impersonate_service_account_bindi
   role    = "roles/owner"
 
   members = [
-    "principalSet://iam.googleapis.com/projects/${var.project_number}/locations/global/workloadIdentityPools/GitHub-actions-pool/attribute.repository/${var.repository}"
+    "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions.name}/attribute.repository/${var.repository}"
   ]
+
+  depends_on = [google_iam_workload_identity_pool_provider.github_actions]
+}
+
+output "workload_identity_provider" {
+  value = google_iam_workload_identity_pool_provider.github_actions.id
+  description = "The ID of the workload identity pool provider for Github Actions."
+}
+
+output "service_account_email" {
+  value = google_service_account.terraform_service_account.email
+  description = "The email address of the service account used by Terraform Cloud."
 }
