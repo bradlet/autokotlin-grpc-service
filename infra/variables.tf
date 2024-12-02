@@ -11,7 +11,19 @@ variable "project_number" {
 }
 
 variable "repository" {
-    description = "The fully-qualified repository name (org + repo)"
+  description = "The fully-qualified repository name (org + repo)"
+  type        = string
+  default     = "bradlet/autokotlin-grpc-service"
+}
+
+variable "tfc_workspace_id" { // not name!
+    description = "The Terraform Cloud workspace ID"
     type        = string
-    default     = "bradlet/autokotlin-grpc-service"
+    default     = "ws-H5RiDyUAgVZfYhxe"
+}
+
+variable "tfc_organization_id" {
+    description = "The Terraform Cloud organization ID"
+    type        = string
+    default     = "org-7u9DjkKnvG5oU5cy"
 }

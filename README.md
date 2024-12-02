@@ -15,8 +15,8 @@ you know which would need to be replaced with your own values.
 
 ## Infrastructure Bootstrapping
 This project requires some initial bootstrapping before Workload Identity Federation can be used for auth.
-1. Login to gcloud cli `gcloud auth login`.
-2. Get a temporary oauth token `gcloud auth print-identity-token`.
-3. Add the token as an environment variable called `GOOGLE_OAUTH_ACCESS_TOKEN` in Terraform Cloud.
+1. Login to gcloud cli `gcloud auth application-default login --scopes=https://www.googleapis.com/auth/cloud-platform`.
+2. Get a temporary oauth token `gcloud auth print-access-token`.
+3. Add the token as a workspace environment variable called `GOOGLE_OAUTH_ACCESS_TOKEN` in Terraform Cloud.
 4. Login to Terraform Cloud with `terraform login`.
 5. Apply the terraform configuration in the `infra` directory manually once (`gradle tfa`).
