@@ -17,8 +17,8 @@ env:
   REGION: us-central1
   PROJECT_ID: thompson-projects
   PROJECT_NUMBER: 194504085959
-  WORKLOAD_IDENTITY_PROVIDER: 'projects/${{ env.PROJECT_ID }}/locations/global/workloadIdentityPools/autokotlin-gha/providers/gha-pool'
-  SERVICE_ACCOUNT: 'gha-terraform-sa-autokotlin@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/thompson-projects/locations/global/workloadIdentityPools/autokotlin-gha/providers/gha-pool'
+  SERVICE_ACCOUNT: 'gha-terraform-sa-autokotlin@thompson-projects.iam.gserviceaccount.com'
 
 jobs:
   terraform:
