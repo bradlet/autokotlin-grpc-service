@@ -90,6 +90,7 @@ resource "google_iam_workload_identity_pool_provider" "terraform_cloud" {
     "attribute.tfc_project_name"    = "assertion.terraform_project_name"
     "google.subject"                = "assertion.terraform_workspace_id"
     "attribute.tfc_workspace_name"  = "assertion.terraform_workspace_name"
+    # Note: This env attribute doesn't work for my naming convention but leaving it here for reference.
     "attribute.tfc_workspace_env"   = "assertion.terraform_workspace_name.split('-')[assertion.terraform_workspace_name.split('-').size() -1]"
   }
 
