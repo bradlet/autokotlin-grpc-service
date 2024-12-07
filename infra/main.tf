@@ -104,7 +104,7 @@ resource "google_iam_workload_identity_pool_provider" "terraform_cloud" {
     "attribute.terraform_run_id"            = "assertion.terraform_run_id",
     "attribute.terraform_full_workspace"    = "assertion.terraform_full_workspace",
     # Note: This env attribute doesn't work for my naming convention but leaving it here for reference.
-    "attribute.tfc_workspace_env"   = "assertion.terraform_workspace_name.split('-')[assertion.terraform_workspace_name.split('-').size() -1]"
+    "attribute.tfc_workspace_env" = "assertion.terraform_workspace_name.split('-')[assertion.terraform_workspace_name.split('-').size() -1]"
   }
 
   oidc {
@@ -113,11 +113,11 @@ resource "google_iam_workload_identity_pool_provider" "terraform_cloud" {
 
   attribute_condition = "attribute.terraform_organization_id == '${var.tfc_organization_id}'"
   # If we want to make this prod only (need to follow naming convention):
-#   attribute_condition = "attribute.tfc_organization_id == 'org-7u9DjkKnvG5oU5cy' && attribute.tfc_workspace_env.startsWith ( 'prod')'"
+  #   attribute_condition = "attribute.tfc_organization_id == 'org-7u9DjkKnvG5oU5cy' && attribute.tfc_workspace_env.startsWith ( 'prod')'"
 }
 
 resource "google_service_account" "tfc_service_account" {
-  account_id = "tfc-terraform-sa-autokotlin"
+  account_id   = "tfc-terraform-sa-autokotlin"
   display_name = "Terraform-Provisioned Service Account for Autokotlin TFC"
 }
 resource "google_service_account_iam_binding" "tfc_service_account_workload_identity_binding" {

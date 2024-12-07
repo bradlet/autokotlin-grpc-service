@@ -17,13 +17,13 @@ variable "repository" {
 }
 
 variable "tfc_workspace_id" { // not name!
-    description = "The Terraform Cloud workspace ID"
-    type        = string
-    default     = "ws-H5RiDyUAgVZfYhxe"
+  description = "The Terraform Cloud workspace ID"
+  type        = string
+  default     = "ws-H5RiDyUAgVZfYhxe"
 }
 
 variable "tfc_organization_id" {
-    description = "The Terraform Cloud organization ID"
-    type        = string
-    default     = "org-7u9DjkKnvG5oU5cy"
+  description = "The Terraform Cloud organization ID"
+  type        = string
+  default     = "org-7u9DjkKnvG5oU5cy"
 }
