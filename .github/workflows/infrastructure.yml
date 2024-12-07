@@ -22,7 +22,6 @@ env:
   # Note: project number instead of ID is required here:
   WORKLOAD_IDENTITY_PROVIDER: 'projects/194504085959/locations/global/workloadIdentityPools/autokotlin-gha/providers/gha-pool'
   SERVICE_ACCOUNT: 'gha-terraform-sa-autokotlin@thompson-projects.iam.gserviceaccount.com'
-  TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
 
 jobs:
   terraform:
@@ -35,6 +34,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
       - name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v2'
@@ -50,8 +51,6 @@ jobs:
 
       - name: Terraform Init
         id: init
-        env:
-          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
         run: terraform -chdir=infra init
 
       - name: Terraform Validate
