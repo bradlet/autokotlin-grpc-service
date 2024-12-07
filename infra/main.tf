@@ -38,10 +38,11 @@ resource "google_iam_workload_identity_pool_provider" "github_actions" {
   display_name                       = "Github Actions Pool Provider"
   description                        = "GitHub Actions identity pool provider for continuous deployment pipeline."
   oidc {
-    issuer_uri = "https://token.actions.GitHubusercontent.com/"
+    issuer_uri = "https://token.actions.githubusercontent.com/"
   }
   attribute_mapping = {
     "google.subject"             = "assertion.sub",
+    "attribute.aud"              = "assertion.aud",
     "attribute.repository"       = "assertion.repository",
     "attribute.repository_owner" = "assertion.repository_owner",
     "attribute.branch"           = "assertion.sub.extract('/heads/{branch}/')"
@@ -55,14 +56,20 @@ resource "google_service_account" "gha_service_account" {
   display_name = "Terraform-Provisioned Service Account for Autokotlin GHA"
 }
 
-// Allow any principal with the correct repository attribute to impersonate the service account
-resource "google_service_account_iam_binding" "impersonate_gha_service_account_binding" {
+resource "google_service_account_iam_binding" "gha_service_account_workload_identity_binding" {
   service_account_id = google_service_account.gha_service_account.name
-  role               = "roles/owner"
-
+  role               = "roles/iam.workloadIdentityUser"
   members = [
-    "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions.name}/attribute.repository/${var.repository}"
+    // Notice workspace id was mapped to google.subject above
+    "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions.name}/*",
   ]
+
+  depends_on = [google_iam_workload_identity_pool_provider.github_actions]
+}
+resource "google_project_iam_member" "gha_service_account_owner" {
+  project = var.project_id
+  role    = "roles/owner"
+  member  = google_service_account.gha_service_account.member
 
   depends_on = [google_iam_workload_identity_pool_provider.github_actions]
 }
@@ -85,11 +92,17 @@ resource "google_iam_workload_identity_pool_provider" "terraform_cloud" {
   description                        = "Terraform Cloud identity pool provider for continuous deployment pipeline."
 
   attribute_mapping = {
-    "attribute.tfc_organization_id" = "assertion.terraform_organization_id"
-    "attribute.tfc_project_id"      = "assertion.terraform_project_id"
-    "attribute.tfc_project_name"    = "assertion.terraform_project_name"
-    "google.subject"                = "assertion.terraform_workspace_id"
-    "attribute.tfc_workspace_name"  = "assertion.terraform_workspace_name"
+    "google.subject"                        = "assertion.sub",
+    "attribute.aud"                         = "assertion.aud",
+    "attribute.terraform_run_phase"         = "assertion.terraform_run_phase",
+    "attribute.terraform_project_id"        = "assertion.terraform_project_id",
+    "attribute.terraform_project_name"      = "assertion.terraform_project_name",
+    "attribute.terraform_workspace_id"      = "assertion.terraform_workspace_id",
+    "attribute.terraform_workspace_name"    = "assertion.terraform_workspace_name",
+    "attribute.terraform_organization_id"   = "assertion.terraform_organization_id",
+    "attribute.terraform_organization_name" = "assertion.terraform_organization_name",
+    "attribute.terraform_run_id"            = "assertion.terraform_run_id",
+    "attribute.terraform_full_workspace"    = "assertion.terraform_full_workspace",
     # Note: This env attribute doesn't work for my naming convention but leaving it here for reference.
     "attribute.tfc_workspace_env"   = "assertion.terraform_workspace_name.split('-')[assertion.terraform_workspace_name.split('-').size() -1]"
   }
@@ -98,8 +111,8 @@ resource "google_iam_workload_identity_pool_provider" "terraform_cloud" {
     issuer_uri = "https://app.terraform.io"
   }
 
-  attribute_condition = "attribute.tfc_organization_id == '${var.tfc_organization_id}'"
-  # If we want to make this prod only:
+  attribute_condition = "attribute.terraform_organization_id == '${var.tfc_organization_id}'"
+  # If we want to make this prod only (need to follow naming convention):
 #   attribute_condition = "attribute.tfc_organization_id == 'org-7u9DjkKnvG5oU5cy' && attribute.tfc_workspace_env.startsWith ( 'prod')'"
 }
 
@@ -107,13 +120,20 @@ resource "google_service_account" "tfc_service_account" {
   account_id = "tfc-terraform-sa-autokotlin"
   display_name = "Terraform-Provisioned Service Account for Autokotlin TFC"
 }
-resource "google_service_account_iam_binding" "sa_tf_banking_dev_iam" {
+resource "google_service_account_iam_binding" "tfc_service_account_workload_identity_binding" {
   service_account_id = google_service_account.tfc_service_account.name
-  role               = "roles/owner"
+  role               = "roles/iam.workloadIdentityUser"
   members = [
     // Notice workspace id was mapped to google.subject above
-    "principal://iam.googleapis.com/${google_iam_workload_identity_pool.terraform_cloud.name}/subject/${var.tfc_workspace_id}",
+    "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.terraform_cloud.name}/*",
   ]
+
+  depends_on = [google_iam_workload_identity_pool_provider.terraform_cloud]
+}
+resource "google_project_iam_member" "tfc_service_account_owner" {
+  project = var.project_id
+  role    = "roles/owner"
+  member  = google_service_account.tfc_service_account.member
 
   depends_on = [google_iam_workload_identity_pool_provider.terraform_cloud]
 }

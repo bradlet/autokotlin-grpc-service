@@ -6,18 +6,21 @@ on:
       - main
     paths:
       - infra/**
+      - .github/workflows/infrastructure.yml
   pull_request:
     branches:
       - main
     paths:
       - infra/**
+      - .github/workflows/infrastructure.yml
 
 
 env:
   REGION: us-central1
   PROJECT_ID: thompson-projects
   PROJECT_NUMBER: 194504085959
-  WORKLOAD_IDENTITY_PROVIDER: 'projects/thompson-projects/locations/global/workloadIdentityPools/autokotlin-gha/providers/gha-pool'
+  # Note: project number instead of ID is required here:
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/194504085959/locations/global/workloadIdentityPools/autokotlin-gha/providers/gha-pool'
   SERVICE_ACCOUNT: 'gha-terraform-sa-autokotlin@thompson-projects.iam.gserviceaccount.com'
 
 jobs:

@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "2.0.20" apply false // This needs to match libs.versions.toml
 }
 
-val terraformPath: String? by extra // Specify different repo from the default with -PterraformPath=...
+val terraformPath: String? by extra // Specify different binary from the default with -PterraformPath=...
 
 
 fun Project.registerTerraformTask(name: String, vararg args: String) {
@@ -14,4 +14,5 @@ fun Project.registerTerraformTask(name: String, vararg args: String) {
 
 // Register top-level scripts here:
 registerTerraformTask("tfi", "init")
-registerTerraformTask("tfa", "apply")
+registerTerraformTask("tfp", "plan")
+registerTerraformTask("tfa", "apply", "-auto-approve")
