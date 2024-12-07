@@ -44,12 +44,12 @@ jobs:
 
       - name: Terraform Format
         id: fmt
-        run: terraform fmt -check
+        run: terraform -chdir=infra fmt -check
         continue-on-error: true
 
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: terraform -chdir=infra init
 
       - name: Terraform Validate
         id: validate
