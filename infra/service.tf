@@ -47,15 +47,15 @@ variable "service_max_instances" {
 }
 
 variable "service_annotations" {
-    description = "The annotations to set for the service. Does not support: run.googleapis.com, cloud.googleapis.com, serving.knative.dev, or autoscaling.knative.dev"
-    type        = map(string)
-    default     = {}
+  description = "The annotations to set for the service. Does not support: run.googleapis.com, cloud.googleapis.com, serving.knative.dev, or autoscaling.knative.dev"
+  type        = map(string)
+  default     = {}
 }
 
 variable "service_port" {
-    description = "The port to expose the service on"
-    type        = number
-    default     = 6565
+  description = "The port to expose the service on"
+  type        = number
+  default     = 6565
 }
 
 resource "google_cloud_run_v2_service" "main" {
