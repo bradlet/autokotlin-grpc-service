@@ -43,7 +43,19 @@ variable "service_min_instances" {
 variable "service_max_instances" {
   description = "The maximum number of instances to run"
   type        = number
-  default     = 100
+  default     = 1
+}
+
+variable "service_annotations" {
+    description = "The annotations to set for the service. Does not support: run.googleapis.com, cloud.googleapis.com, serving.knative.dev, or autoscaling.knative.dev"
+    type        = map(string)
+    default     = {}
+}
+
+variable "service_port" {
+    description = "The port to expose the service on"
+    type        = number
+    default     = 6565
 }
 
 resource "google_cloud_run_v2_service" "main" {
@@ -53,6 +65,8 @@ resource "google_cloud_run_v2_service" "main" {
   ingress             = var.service_allow_all_ingress ? "INGRESS_TRAFFIC_ALL" : "INGRESS_TRAFFIC_INTERNAL_ONLY"
 
   template {
+    service_account = google_service_account.cloud_run_service_account.email
+
     scaling {
       min_instance_count = var.service_min_instances
       max_instance_count = var.service_max_instances
@@ -60,6 +74,9 @@ resource "google_cloud_run_v2_service" "main" {
 
     containers {
       image = var.service_image
+
+      ports = [var.service_port]
+
       resources {
         limits = {
           cpu    = var.service_cpu
@@ -76,4 +93,6 @@ resource "google_cloud_run_v2_service" "main" {
       }
     }
   }
+
+  depends_on = [google_service_account_iam_binding.cloud_run_service_account_binding]
 }

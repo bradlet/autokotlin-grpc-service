@@ -20,6 +20,19 @@ provider "google" {
   project = var.project_id
 }
 
+
+resource "google_service_account" "cloud_run_service_account" {
+  account_id   = "autokotlin-cloud-run-sa"
+  display_name = "Service account that runs the Autokotlin Cloud Run service."
+}
+
+resource "google_service_account_iam_binding" "cloud_run_service_account_binding" {
+  service_account_id = google_service_account.cloud_run_service_account.name
+  role               = "roles/run.admin"
+  members            = ["serviceAccount:${google_service_account.cloud_run_service_account.email}"]
+}
+
+
 /*
   Setup Github Action <-> GCP Workload Identity Federation
   This will enable cloud run deployments in our pipeline.
