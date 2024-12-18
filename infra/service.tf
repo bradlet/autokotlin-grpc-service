@@ -96,5 +96,5 @@ resource "google_cloud_run_v2_service" "main" {
     }
   }
 
-  depends_on = [google_service_account_iam_binding.cloud_run_service_account_binding]
+  depends_on = [google_project_iam_member.cloud_run_sa_admin]
 }
