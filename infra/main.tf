@@ -26,10 +26,10 @@ resource "google_service_account" "cloud_run_service_account" {
   display_name = "Service account that runs the Autokotlin Cloud Run service."
 }
 
-resource "google_service_account_iam_binding" "cloud_run_service_account_binding" {
-  service_account_id = google_service_account.cloud_run_service_account.name
-  role               = "roles/run.admin"
-  members            = ["serviceAccount:${google_service_account.cloud_run_service_account.email}"]
+resource "google_project_iam_member" "cloud_run_sa_admin" {
+  project = var.project_id
+  role    = "roles/run.admin"
+  member  = "serviceAccount:${google_service_account.cloud_run_service_account.email}"
 }
 
 
