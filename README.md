@@ -27,3 +27,4 @@ This project requires some initial bootstrapping before Workload Identity Federa
 - IAM Service Account Credentials API
 - Identity and Access Management (IAM) API
 - Cloud Resource Manager API
+- Cloud Run Admin API

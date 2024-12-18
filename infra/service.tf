@@ -34,6 +34,18 @@ variable "service_env" {
   default     = {}
 }
 
+variable "service_min_instances" {
+  description = "The minimum number of instances to run"
+  type        = number
+  default     = 0
+}
+
+variable "service_max_instances" {
+  description = "The maximum number of instances to run"
+  type        = number
+  default     = 100
+}
+
 resource "google_cloud_run_v2_service" "main" {
   name                = "autokotlin-service"
   location            = "us-central1"
@@ -41,6 +53,11 @@ resource "google_cloud_run_v2_service" "main" {
   ingress             = var.service_allow_all_ingress ? "INGRESS_TRAFFIC_ALL" : "INGRESS_TRAFFIC_INTERNAL_ONLY"
 
   template {
+    scaling {
+      min_instance_count = var.service_min_instances
+      max_instance_count = var.service_max_instances
+    }
+
     containers {
       image = var.service_image
       resources {
