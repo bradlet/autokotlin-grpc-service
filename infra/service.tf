@@ -50,12 +50,13 @@ resource "google_cloud_run_v2_service" "main" {
         }
       }
 
-      env = [
-        for key, value in var.service_env : {
-          name  = key
-          value = value
+      dynamic "env" {
+        for_each = var.service_env
+        content {
+          name  = env.key
+          value = env.value
         }
-      ]
+      }
     }
   }
 }
