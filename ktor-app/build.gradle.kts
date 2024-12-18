@@ -1,12 +1,15 @@
 plugins {
     kotlin("jvm")
     alias(libs.plugins.ktor)
-//    alias(libs.plugins.jib)
+    alias(libs.plugins.jib)
     application
 }
 
+val main = "com.autokotlin.ktor.ServerKt"
+val imageRepo: String? by extra // Specify different repo from the default with -PimageRepo=...
+
 application {
-    mainClass = "com.autokotlin.ktor.ServerKt"
+    mainClass = main
 }
 
 repositories {
@@ -76,5 +79,18 @@ sourceSets {
         kotlin {
             srcDir("src/test/kotlin")
         }
+    }
+}
+
+jib {
+    from {
+        image = "eclipse-temurin:22"
+    }
+    to {
+        image = imageRepo ?: "bradlet2/autokotlin-ktor-service"
+    }
+    container {
+        mainClass = main
+        ports = listOf("8080")
     }
 }

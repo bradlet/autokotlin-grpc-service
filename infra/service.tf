@@ -7,7 +7,7 @@ variable "service_allow_all_ingress" {
 variable "service_image" {
   description = "The image to deploy to Cloud Run"
   type        = string
-  default     = "bradlet2/autokotlin-grpc-service"
+  default     = "bradlet2/autokotlin-ktor-service"
 }
 
 variable "service_cpu" {
