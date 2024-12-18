@@ -25,3 +25,4 @@ This project requires some initial bootstrapping before Workload Identity Federa
 
 ## Manually Enabled GCP APIs
 - IAM Service Account Credentials API
+- Identity and Access Management (IAM) API
