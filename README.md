@@ -23,6 +23,12 @@ This project requires some initial bootstrapping before Workload Identity Federa
 4. Login to Terraform Cloud with `terraform login`.
 5. Apply the terraform configuration in the `infra` directory manually once (`gradle tfa`).
 
+Now that the infrastructure is bootstrapped, add some environment variables to the TFC workspace to enable WIF.
+1. `TFC_GCP_PROVIDER_AUTH` = `true`
+2. `TFC_GCP_RUN_SERVICE_ACCOUNT_EMAIL` = terraform output value for `tfc_service_account_email`
+3. `TFC_GCP_WORKLOAD_PROVIDER_NAME` = terraform output value for `tfc_workload_identity_provider`
+4. Remove the GOOGLE_OAUTH_ACCESS_TOKEN environment variable as it isn't needed any longer.
+
 ## Manually Enabled GCP APIs
 - IAM Service Account Credentials API
 - Identity and Access Management (IAM) API
