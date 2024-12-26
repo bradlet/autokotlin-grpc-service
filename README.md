@@ -27,7 +27,8 @@ Now that the infrastructure is bootstrapped, add some environment variables to t
 1. `TFC_GCP_PROVIDER_AUTH` = `true`
 2. `TFC_GCP_RUN_SERVICE_ACCOUNT_EMAIL` = terraform output value for `tfc_service_account_email`
 3. `TFC_GCP_WORKLOAD_PROVIDER_NAME` = terraform output value for `tfc_workload_identity_provider`
-4. Remove the GOOGLE_OAUTH_ACCESS_TOKEN environment variable as it isn't needed any longer.
+   - Note: the `project_id` in this value should be replaced with the `project_number`
+5. Remove the GOOGLE_OAUTH_ACCESS_TOKEN environment variable as it isn't needed any longer.
 
 ## Manually Enabled GCP APIs
 - IAM Service Account Credentials API
