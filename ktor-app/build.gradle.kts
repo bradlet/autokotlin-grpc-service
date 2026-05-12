@@ -44,8 +44,11 @@ dependencies {
     // that import ktor-client packages. We don't use the generated client at runtime, but the
     // generated `apiPackage` classes still need this on the classpath to compile.
     implementation(libs.ktor.client.content.negotation)
+    // Engine for the ktor HttpClient used by the /downstream route to call external APIs.
+    implementation(libs.ktor.client.cio)
 
     testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.ktor.client.mock)
 
     // Test dependencies
     testImplementation(libs.junit.jupiter)

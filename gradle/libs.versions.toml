@@ -46,6 +46,9 @@ ktor-gson = { group = "io.ktor", name = "ktor-serialization-gson", version.ref =
 ktor-server-swagger = { group = "io.ktor", name = "ktor-server-swagger", version.ref = "ktor" }
 # Required because the openapi-generator `library: jvm-ktor` option generates client classes that import ktor-client.
 ktor-client-content-negotation = { group = "io.ktor", name = "ktor-client-content-negotiation-jvm", version.ref = "ktor" }
+# CIO engine for the ktor HttpClient used to call downstream APIs.
+ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio-jvm", version.ref = "ktor" }
+ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
