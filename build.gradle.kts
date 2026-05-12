@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.0.20" apply false // This needs to match libs.versions.toml
+    alias(libs.plugins.kotlin.jvm) apply false
 }
 
 val terraformPath: String? by extra // Specify different binary from the default with -PterraformPath=...

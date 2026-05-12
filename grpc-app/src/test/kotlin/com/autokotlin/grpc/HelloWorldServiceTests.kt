@@ -1,4 +1,4 @@
-package com.autokotlin.grpc.integration
+package com.autokotlin.grpc
 
 import com.autokotlin.grpc.HelloWorldService
 import com.lib.BaseGrpcServerIntegrationTests
@@ -7,7 +7,11 @@ import helloworld.helloRequest
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
 
-class GrpcServerIntegrationTests: BaseGrpcServerIntegrationTests(
+/**
+ * Test class that uses the in-process transport mechanism to emulate real rpc interactions, allowing for simplified
+ * test setup and execution.
+ */
+class HelloWorldServiceTests: BaseGrpcServerIntegrationTests(
     listOf(HelloWorldService()),
     {
         "test HelloWorldService response" {

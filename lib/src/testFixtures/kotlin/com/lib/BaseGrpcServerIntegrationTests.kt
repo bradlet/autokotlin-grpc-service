@@ -6,7 +6,7 @@ import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.core.test.TestCase
-import io.kotest.core.test.TestResult
+import io.kotest.engine.test.TestResult
 
 abstract class BaseGrpcServerIntegrationTests(
     private val servicesUnderTest: List<BindableService>,

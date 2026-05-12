@@ -30,7 +30,7 @@ dependencies {
     implementation(libs.ktor.content.negotation)
     implementation(libs.ktor.gson)
     // implementation(libs.ktor.status.pages
-    testImplementation(libs.ktor.server.tests)
+    testImplementation(libs.ktor.server.test.host)
 
     // Test dependencies
     testImplementation(libs.junit.jupiter)

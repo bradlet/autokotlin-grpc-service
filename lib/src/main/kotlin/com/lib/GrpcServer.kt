@@ -5,7 +5,7 @@ import io.grpc.ServerBuilder
 import io.grpc.health.v1.HealthCheckResponse
 import io.grpc.protobuf.services.ProtoReflectionService
 import io.grpc.protobuf.services.HealthStatusManager
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 /**
  * A simple gRpc server wrapper implementation that exposes a limited API that simplifies server setup and testing.

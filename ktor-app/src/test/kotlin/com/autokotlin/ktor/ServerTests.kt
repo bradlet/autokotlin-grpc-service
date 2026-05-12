@@ -12,6 +12,7 @@ class ServerTests: StringSpec({
 
     "test server responds hello world" {
         testApplication {
+            application { module() }
             val response = createClient { }.get("/")
             response.bodyAsText() shouldBe "Hello World!"
         }
@@ -19,6 +20,7 @@ class ServerTests: StringSpec({
 
     "test server serializes response" {
         testApplication {
+            application { module() }
             val response = createClient { }.get("/blob")
             response.bodyAsText() shouldBe Gson().toJson(Response("Hello World!"))
         }
