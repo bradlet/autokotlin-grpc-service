@@ -1,0 +1,250 @@
+name: Build & Deploy
+
+# ------------------------------------------------------------------------------
+# This targets a single Gradle subproject to build, tests, and deploy.
+# Default is the Ktor HTTP app. To deploy `grpc-app` instead:
+#   1. Change TARGET_APP below.
+#   2. Update the path-filter globs further down (GitHub Actions path filters
+#      do not interpolate ${{ env.* }} — keep them in sync with TARGET_APP).
+#   3. Make sure the chosen subproject's build.gradle.kts has a jib block.
+# ------------------------------------------------------------------------------
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # Keep in sync with TARGET_APP below.
+      - ktor-app/**
+      - lib/**
+      - openapi/**
+      - infra/**
+      - gradle/**
+      - settings.gradle.kts
+      - build.gradle.kts
+      - .github/workflows/deploy.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      # Keep in sync with TARGET_APP below.
+      - ktor-app/**
+      - lib/**
+      - openapi/**
+      - infra/**
+      - gradle/**
+      - settings.gradle.kts
+      - build.gradle.kts
+      - .github/workflows/deploy.yml
+
+env:
+  TARGET_APP: ktor-app
+
+  # REPLACE_ME: must match the LOCATION set in scripts/bootstrap/setup-project.sh.
+  REGION: REPLACE_ME-region
+
+  # REPLACE_ME: your GCP project id (the one you ran the bootstrap script against).
+  PROJECT_ID: REPLACE_ME-project-id
+
+  # REPLACE_ME: gcloud projects describe $PROJECT_ID --format='value(projectNumber)'
+  PROJECT_NUMBER: REPLACE_ME-project-number
+
+  # REPLACE_ME: printed at the end of scripts/bootstrap/setup-project.sh as
+  # "Provider ID (for GHA)". Project NUMBER (not id) is required in this URL.
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/REPLACE_ME-project-number/locations/global/workloadIdentityPools/REPLACE_ME-name-gha/providers/REPLACE_ME-name-gha-pool'
+
+  # REPLACE_ME: printed at the end of scripts/bootstrap/setup-project.sh.
+  # Format: gha-gcloud-sa-<project-name>@<project-id>.iam.gserviceaccount.com
+  SERVICE_ACCOUNT: 'gha-gcloud-sa-REPLACE_ME-name@REPLACE_ME-project-id.iam.gserviceaccount.com'
+
+  # REPLACE_ME: the bootstrap script does NOT create the Artifact Registry repo.
+  # Create one manually first:
+  #   gcloud artifacts repositories create <repo-name> \
+  #     --repository-format=docker --location=<REGION> --project=<PROJECT_ID>
+  # Then set this to: <REGION>-docker.pkg.dev/<PROJECT_ID>/<repo-name>
+  GAR_REPO: 'REPLACE_ME-region-docker.pkg.dev/REPLACE_ME-project-id/REPLACE_ME-repo-name'
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    outputs:
+      service_image: '${{ env.GAR_REPO }}/${{ env.TARGET_APP }}:${{ steps.hash.outputs.APP_HASH }}'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup JDK environment
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 22
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          # Only update the gradle GitHub actions cache if we are on main; else, read only
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - name: Run tests for target app
+        run: ./gradlew :${{ env.TARGET_APP }}:test
+
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: 'access_token'
+          project_id: ${{ env.PROJECT_ID }}
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+
+      - name: Login to Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGION }}-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: Generate App Hash
+        id: hash
+        run: |
+          APP_HASH=$(find "${{ env.TARGET_APP }}" -type f -exec sha256sum {} + | sort | sha256sum | cut -d' ' -f1)
+          echo "$APP_HASH"
+          echo "APP_HASH=$APP_HASH" >> "$GITHUB_OUTPUT"
+
+      - name: Gradle Jib
+        run: |
+          ./gradlew :${{ env.TARGET_APP }}:jib \
+            -PimageRepo='${{ env.GAR_REPO }}' \
+            -PjibCommitHashTag=${{ steps.hash.outputs.APP_HASH }}
+
+  terraform:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.14.3
+
+      # After this point we are authenticated as the GCP service account via WIF.
+      # The service account has roles/owner on the project (granted by the bootstrap script).
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform -chdir=infra fmt -check
+        continue-on-error: true
+
+      - name: Terraform Init
+        id: init
+        run: terraform -chdir=infra init
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform -chdir=infra validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        env:
+          SERVICE_IMAGE: ${{ needs.build.outputs.service_image }}
+        run: |
+          # Write project-identity + service-image into an auto.tfvars file so the
+          # terraform configuration in infra/ (which has no defaults for project_id /
+          # project_number) can resolve them.
+          {
+            echo "project_id = \"${{ env.PROJECT_ID }}\""
+            echo "project_number = \"${{ env.PROJECT_NUMBER }}\""
+            echo "service_image = \"${SERVICE_IMAGE}\""
+          } > infra/terraform.auto.tfvars
+
+          terraform -chdir=infra plan -no-color
+
+      # GITHUB_TOKEN is made available for us automatically. See:
+      # https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication#about-the-github_token-secret
+      - name: Comment Plan
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+            })
+
+            // 2. Prepare format of the comment
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            <details><summary>Validation Output</summary>
+
+            \`\`\`\n
+            ${{ steps.validate.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`,  Workflow: \`${{ github.workflow }}\`*`;
+
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
+
+      # Apply on main pushes, or on PRs tagged with the `terraform:apply` label
+      # (useful when you want to validate the apply path before merge).
+      - name: Terraform Apply
+        id: apply
+        if: github.event_name == 'push'
+          || github.event_name == 'pull_request' && contains(
+          github.event.pull_request.labels.*.name, 'terraform:apply'
+          )
+        # auto.tfvars file from plan step persists to here
+        run: terraform -chdir=infra apply -auto-approve -no-color

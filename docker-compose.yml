@@ -1,0 +1,26 @@
+# Local-development stack for the ktor-app.
+#
+# Quickstart:
+#   1. ./gradlew :ktor-app:jibDockerBuild
+#      Builds the image straight into your local Docker daemon (no registry push, no auth needed).
+#      The image is tagged using the `to.image` value defined in ktor-app/build.gradle.kts.
+#   2. docker compose up
+#      Starts ktor-app on http://localhost:8080
+#         /          → plain-text "Hello World!"
+#         /hello     → JSON {"message":"Hello World!"} (served from the OpenAPI-generated model)
+#         /docs      → Swagger UI rendered from openapi/api.yaml
+#         /openapi.yaml → the raw spec
+#   3. Rebuild on changes: re-run jibDockerBuild, then `docker compose up --force-recreate`.
+#
+# REPLACE_ME: After you wire up an Artifact Registry repo and update the default `to.image`
+# host in ktor-app/build.gradle.kts, mirror the same image tag here so this file stays in sync.
+services:
+  ktor-app:
+    image: REPLACE_ME-docker.pkg.dev/REPLACE_ME-project/REPLACE_ME-repo/ktor-app:latest
+    ports:
+      - "8080:8080"
+    environment:
+      # These map to the HOCON `${?PORT}` / `${?DEV}` overrides in
+      # ktor-app/src/main/resources/application.conf.
+      - PORT=8080
+      - DEV=true

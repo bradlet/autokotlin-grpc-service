@@ -1,0 +1,26 @@
+openapi: 3.0.3
+info:
+  title: Autokotlin Service API
+  description: Example HTTP API for the autokotlin-service template.
+  version: 1.0.0
+paths:
+  /hello:
+    get:
+      operationId: getHello
+      summary: Returns a hello-world greeting.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hello'
+components:
+  schemas:
+    Hello:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          example: Hello World!

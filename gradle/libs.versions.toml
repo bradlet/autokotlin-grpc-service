@@ -10,6 +10,7 @@ grpc-kotlin = "1.5.0"
 proto = "4.34.1"
 logback = "1.5.32"
 ktor = "3.4.3"
+openapi-generator = "7.10.0"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
@@ -42,9 +43,13 @@ ktor-netty = { group = "io.ktor", name = "ktor-server-netty-jvm", version.ref = 
 ktor-server-test-host = { group = "io.ktor", name = "ktor-server-test-host", version.ref = "ktor" }
 ktor-content-negotation = { group = "io.ktor", name = "ktor-server-content-negotiation-jvm", version.ref = "ktor" }
 ktor-gson = { group = "io.ktor", name = "ktor-serialization-gson", version.ref = "ktor" }
+ktor-server-swagger = { group = "io.ktor", name = "ktor-server-swagger", version.ref = "ktor" }
+# Required because the openapi-generator `library: jvm-ktor` option generates client classes that import ktor-client.
+ktor-client-content-negotation = { group = "io.ktor", name = "ktor-client-content-negotiation-jvm", version.ref = "ktor" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 jib = { id = "com.google.cloud.tools.jib", version = "3.5.3" }
+openapi = { id = "org.openapi.generator", version.ref = "openapi-generator" }
